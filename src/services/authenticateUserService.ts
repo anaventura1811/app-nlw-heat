@@ -1,6 +1,8 @@
 import "dotenv/config";
 import axios from "axios";
 import prisma from '../prisma';
+import { sign } from "jsonwebtoken";
+import "dotenv/config";
 
 interface IAccessTokenResponse {
   access_token: string
@@ -35,15 +37,18 @@ class AuthenticaUserService {
       }
     });
 
+    let user = null;
+
     const { login, id, avatar_url, name, email } = response.data;
-    const findUser = await prisma.user.findFirst({
+    
+    user = await prisma.user.findFirst({
 			where: {
 				github_id: id,
 			},
 		});
 
-    if (!findUser) {
-      await prisma.user.create({
+    if (!user) {
+     user = await prisma.user.create({
         data: {
           email,
           name,
@@ -55,7 +60,23 @@ class AuthenticaUserService {
       .catch((e) => console.log(e));
     }
 
-    return response.data;
+    const token = sign(
+			{
+				user: {
+					name: user.name,
+					avatar_url: user.avatar_url,
+					id: user.id,
+				},
+			},
+			process.env.JWT_SECRET,
+			{
+				subject: user.id,
+				expiresIn: '30d',
+				algorithm: 'HS256',
+			}
+		);
+
+    return { token, user};
   }
 }
 
