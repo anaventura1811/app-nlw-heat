@@ -9,7 +9,7 @@ interface IAccessTokenResponse {
 interface IUserResponse {
   avatar_url: string,
   login: string,
-  github_id: number,
+  id: number,
   name: string,
   email: string
 }
@@ -35,17 +35,26 @@ class AuthenticaUserService {
       }
     });
 
-    const { login, github_id, avatar_url, name, email } = response.data;
-    
-    const user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        github_id,
-        avatar_url,
-        login,
-      },
-	}).then((userData) => console.log('user', userData)).catch((e) => console.log(e));
+    const { login, id, avatar_url, name, email } = response.data;
+    const findUser = await prisma.user.findFirst({
+			where: {
+				github_id: id,
+			},
+		});
+
+    if (!findUser) {
+      await prisma.user.create({
+        data: {
+          email,
+          name,
+          github_id: id,
+          avatar_url,
+          login
+        }
+      }).then((userData) => console.log('user', userData))
+      .catch((e) => console.log(e));
+    }
+
     return response.data;
   }
 }
