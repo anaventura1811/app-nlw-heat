@@ -1,8 +1,15 @@
 import 'dotenv/config';
 import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+
 import { router } from './routes/routes';
 
 const app = express();
+
+const serverHttp = http.createServer(app);
+
+const io = new Server(serverHttp);
 
 const PORT = process.env.PORT || 4000;
 
