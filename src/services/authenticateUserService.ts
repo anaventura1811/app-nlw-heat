@@ -1,5 +1,6 @@
 import "dotenv/config";
 import axios from "axios";
+import prisma from '../prisma';
 
 interface IAccessTokenResponse {
   access_token: string
@@ -8,8 +9,9 @@ interface IAccessTokenResponse {
 interface IUserResponse {
   avatar_url: string,
   login: string,
-  id: number,
-  name: string
+  github_id: number,
+  name: string,
+  email: string
 }
 
 class AuthenticaUserService {
@@ -33,6 +35,17 @@ class AuthenticaUserService {
       }
     });
 
+    const { login, github_id, avatar_url, name, email } = response.data;
+    
+    const user = await prisma.user.create({
+      data: {
+        email,
+        name,
+        github_id,
+        avatar_url,
+        login,
+      },
+	}).then((userData) => console.log('user', userData)).catch((e) => console.log(e));
     return response.data;
   }
 }
