@@ -2,27 +2,29 @@ import 'dotenv/config';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import path from 'path';
 import { Server } from 'socket.io';
 
 import { router } from './routes/routes';
 
 const app = express();
 app.use(cors());
+// app.use(express.static(path.join(__dirname, '/public')));
+// app.set('view engine', 'ejs');
+// app.set('views', './views');
 
 const serverHttp = http.createServer(app);
 
 const io = new Server(serverHttp, {
   cors: {
-    origin: "*"
+    origin: "*",
+    // methods: ['GET', 'POST']
   }
 });
 
 io.on("connection", (socket) => {
   console.log(`Usuário conectado no socket ${socket.id}`);
 });
-
-const PORT = process.env.PORT || 4000;
-
 
 app.use(express.json());
 
@@ -38,4 +40,8 @@ app.get('/signin/callback', (req, res) => {
   return res.json(code);
 });
 
-app.listen(PORT, () => console.log(`ouvindo na porta ${PORT}`));
+// app.get('/', (req, res) => {
+//   res.render('index')
+// })
+
+export { serverHttp, io };

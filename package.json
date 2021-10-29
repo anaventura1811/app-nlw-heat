@@ -6,16 +6,18 @@
   "author": "Ana Ventura <anaventura1811@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev --exit-child src/app.ts"
+    "dev": "ts-node-dev --exit-child src/server.ts"
   },
   "dependencies": {
     "@prisma/client": "3.3.0",
     "axios": "^0.24.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "socket.io": "^4.3.1"
+    "socket.io": "^4.3.1",
+    "socket.io-client": "^4.3.2"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
